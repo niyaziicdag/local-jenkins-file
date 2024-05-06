@@ -1,0 +1,63 @@
+pipeline {
+    agent any
+    parameters {
+        choice(name: 'Headless', choices: ['true', 'false'], description: '')
+        string(name: 'TagName', defaultValue: '@regression', description: '')
+        choice(name: 'Browser', choices: ['chrome', 'firefox'], description: 'Pick something')
+        gitParameter branch: '',
+                branchFilter: 'origin/(.*)',
+                useRepository: '.*.git',
+                defaultValue: 'master',
+                description: '',
+                name: 'BRANCH',
+                quickFilterEnabled: false,
+                selectedValue: 'DEFAULT',
+                sortMode: 'DESCENDING_SMART',
+                tagFilter: '*',
+                type: 'PT_BRANCH'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout([$class                           : 'GitSCM',
+                          branches                         : [[name: "${params.BRANCH}"]],
+                          doGenerateSubmoduleConfigurations: false,
+                          extensions                       : [],
+                          gitTool                          : 'Default',
+                          submoduleCfg                     : [],
+                          userRemoteConfigs                : [[url: 'https://github.com/niyaziicdag/hb-web-ui-automation.git']]
+                ])
+            }
+        }
+        stage('Running Test') {
+            steps {
+                sh """
+                mvn install
+                mvn clean test -Dtest=Runner "-Dtags=${params.TagName}" -Dbrowser=${Browser} -Dheadless=${Headless}
+mvn clean test -Dtest=Runner "-Dtags=@regression" -Dbrowser="chrome"
+                """
+
+            }
+        }
+
+    }
+    post {
+        always {
+            allure includeProperties:
+                    false,
+                    jdk: '',
+                    results: [[path: 'allure-results']]
+        }
+        aborted {
+            // One or more steps need to be included within each condition's block.
+        }
+        success {
+            // One or more steps need to be included within each condition's block.
+        }
+        failure {
+            // One or more steps need to be included within each condition's block.
+        }
+    }
+
+
+}
