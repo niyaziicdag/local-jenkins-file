@@ -41,14 +41,7 @@ mvn clean test -Dtest=Runner "-Dtags=@regression" -Dbrowser="chrome"
         }
 
     }
-    post {
-        always {
-            allure includeProperties:
-                    false,
-                    jdk: '',
-                    results: [[path: 'allure-results']]
-        }
-    }
+
 
 
 }
