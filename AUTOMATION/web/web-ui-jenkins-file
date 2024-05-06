@@ -48,15 +48,6 @@ mvn clean test -Dtest=Runner "-Dtags=@regression" -Dbrowser="chrome"
                     jdk: '',
                     results: [[path: 'allure-results']]
         }
-        aborted {
-            // One or more steps need to be included within each condition's block.
-        }
-        success {
-            // One or more steps need to be included within each condition's block.
-        }
-        failure {
-            // One or more steps need to be included within each condition's block.
-        }
     }
 
 
